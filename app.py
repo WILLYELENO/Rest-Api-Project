@@ -37,6 +37,7 @@ def create_app(db_url= None):
     migrate = Migrate(app, db)
     api = Api(app)
 
+
 #   CONFIGURACION DE JWT:
     #CLAVE SECRETA JWT:
     app.config["JWT_SECRET_KEY"] = "320120231160252190274514617873679966463" 

@@ -120,17 +120,12 @@ def create_app(db_url= None):
         )
 
     # JWT configuration ends
-
-
-
-
-
-
 #   Aca le indico que con la primera peticion que se haga, antes de inicializar
 # mi app de flask, primero que cree todas las tablas en la db, si es que no existen ya
 #    sql sabe que tablas crear porque arriba importamos los models
     @app.before_first_request
     def create_tables():
+        
         db.create_all()
     api.register_blueprint(ItemBlueprint)
     api.register_blueprint(StoreBlueprint)
@@ -138,3 +133,5 @@ def create_app(db_url= None):
     api.register_blueprint(UserBlueprint)
 
     return app
+
+app = create_app()

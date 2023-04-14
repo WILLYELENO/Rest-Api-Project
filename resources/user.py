@@ -32,7 +32,7 @@ blp = Blueprint("Users", "users", description="Operations on users")
 
 
 #FUncion de mensaje simple
-def send_simple_message(to , subject,body):
+def send_simple_message(to, subject, body):
     domain = os.getenv("MAILGUN_DOMAIN")    
 	
     return requests.post(

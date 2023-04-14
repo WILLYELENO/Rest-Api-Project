@@ -1,3 +1,5 @@
+import requests
+import os
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from flask_jwt_extended import (
@@ -12,33 +14,63 @@ from flask_jwt_extended import (
 #lo enviamos al cliente y la unica manera de obtenerlo es proporcionandonos el nombre de usuario
 # y la contraseña correctos. Una vez que suceda eso, le enviamos al cliente y este lo almacenara y en
 #cada peticion nos lo devolverá.
+from sqlalchemy import or_
+
 
 #Vamos a utilizar para hashear la contraseña que envía el cliente.
 from passlib.hash import pbkdf2_sha256
 
 from db import db
 from models import UserModel
-from schemas import UserSchema
+from schemas import UserSchema, UserRegisterSchema
 from blocklist import BLOCKLIST
+
 
 
 blp = Blueprint("Users", "users", description="Operations on users")
 
 
+
+#FUncion de mensaje simple
+def send_simple_message(to , subject,body):
+    domain = os.getenv("MAILGUN_DOMAIN")    
+	
+    return requests.post(
+		f"https://api.mailgun.net/v3/{domain}/messages",
+		auth=("api", os.getenv("MAILGUN_API_KEY")),
+		data= {"from": "Willians.eleno <mailgun@{domain}}>",
+			"to": [to],#,["bar@example.com", "YOU@YOUR_DOMAIN_NAME"],
+			"subject": subject,#"Hello",
+			"text": body}) #Testing some Mailgun awesomeness!"})
+
+
+
+
+
 @blp.route("/register")
 class UserRegister(MethodView):
-    @blp.arguments(UserSchema)
+    @blp.arguments(UserRegisterSchema)
     def post(self, user_data):
-        if UserModel.query.filter(UserModel.username == user_data["username"]).first():
-            abort(409, message="Un usuario con ese nombre ya existe.")
+        if UserModel.query.filter(
+            or_(UserModel.username == user_data["username"],
+                UserModel.email == user_data["email"]
+            )
+        ).first():
+            abort(409, message="Un usuario con ese nombre o email ya existe.")
 #   Si no existe el usuario, lo creamos con nuestro modelo de usuario.
         user = UserModel(
             username=user_data["username"],
+            email = user_data["email"],
             password=pbkdf2_sha256.hash(user_data["password"]),
         )
         db.session.add(user)
         db.session.commit()
 
+        send_simple_message(
+            to = user.email,
+            subject = "Registro Exitoso",
+            body = f"hola {user.username}! tu registro ha sido exitoroso!"
+        )
         return {"message": "User created successfully."}, 201
 
 

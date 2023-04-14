@@ -29,7 +29,7 @@ class PlainTagSchema(Schema):
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
     username = fields.Str(required=True)
-    password = fields.Str(required=True) 
+    password = fields.Str(required=True, load_only=True) 
 #load_only = evita que nosotros le enviemos la contraseña al cliente.
 
 #Esquemas que contemplan relaciones entre tablas:
@@ -61,3 +61,6 @@ class TagAndItemSchema(Schema):
     tag = fields.Nested(TagSchema)
 
 
+
+class UserRegisterSchema(UserSchema):
+    email = fields.Str(required=True)

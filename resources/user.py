@@ -31,17 +31,27 @@ blp = Blueprint("Users", "users", description="Operations on users")
 
 
 
+def send_simple_message(to, subject,body):
+    return requests.post(
+        "https://api.mailgun.net/v3/sandboxfaf84a7b23fb4212bf1b7343e4420445.mailgun.org/messages",
+        auth=("api", "f56b0da947c422bdc7c44da737d3c79e-2cc48b29-d61cbea3"),  # Reemplaza "YOUR_API_KEY" con tu API Key de Mailgun
+        data={"from": "Excited User <mailgun@sandboxfaf84a7b23fb4212bf1b7343e4420445.mailgun.org>",
+            "to": [to],
+            "subject": subject,
+            "text": body})
+
+
 #FUncion de mensaje simple
-def send_simple_message(to, subject, body):
+"""def send_simple_message(to, subject, body):
     domain = os.getenv("MAILGUN_DOMAIN")    
 	
     return requests.post(
 		f"https://api.mailgun.net/v3/{domain}/messages",
-		auth=("api", os.getenv("MAILGUN_API_KEY")),
+		auth=("api", os.getenv("f56b0da947c422bdc7c44da737d3c79e-2cc48b29-d61cbea3")),
 		data= {"from": "Willians.eleno <mailgun@{domain}}>",
 			"to": [to],#,["bar@example.com", "YOU@YOUR_DOMAIN_NAME"],
 			"subject": subject,#"Hello",
-			"text": body}) #Testing some Mailgun awesomeness!"})
+			"text": body}) #Testing some Mailgun awesomeness!"})"""
 
 
 
